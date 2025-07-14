@@ -23,13 +23,52 @@ namespace API.Controllers
 
         // GET: api/Cities
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<City>>> GetCities()
+        public async Task<IActionResult> GetCitiesWithHouseCount()
         {
-          if (_context.Cities == null)
-          {
-              return NotFound();
-          }
-            return await _context.Cities.Include(c => c.Streets).ThenInclude(s=> s.Houses).ThenInclude(h => h.Apartments).ToListAsync();
+            var result = await _context.Cities
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Name,
+                    HouseCount = c.Streets.SelectMany(s => s.Houses).Count()
+                })
+                .ToListAsync();
+
+            return Ok(result);
+        }
+        // GET: api/Cities/5/streets
+        [HttpGet("{cityId}/streets")]
+        public async Task<IActionResult> GetStreetsByCity(int cityId)
+        {
+            var result = await _context.Streets
+                .Where(s => s.CityId == cityId)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Name,
+                    HouseCount = s.Houses.Count
+                })
+                .ToListAsync();
+
+            return Ok(result);
+        }
+        // GET: api/Cities51/houses
+        [HttpGet("{cityId}/houses")]
+        public async Task<IActionResult> GetHousesByCity(int cityId)
+        {
+            var result = await _context.Houses
+                .Where(h => h.Street.CityId == cityId)
+                .Include(h => h.Street)
+                .ThenInclude(s => s.City)
+                .Select(h => new
+                {
+                    h.Id,
+                    Address = $"{h.Street.City.Name}, {h.Street.Name}, д. {h.Number}",
+                    ApartmentCount = h.Apartments.Count
+                })
+                .ToListAsync();
+
+            return Ok(result);
         }
 
         // GET: api/Cities/5

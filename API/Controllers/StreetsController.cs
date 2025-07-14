@@ -32,6 +32,24 @@ namespace API.Controllers
             return await _context.Streets.Include(e => e.Houses).ToListAsync();
         }
 
+        [HttpGet("{streetId}/houses")]
+        public async Task<IActionResult> GetHousesByStreet(int streetId)
+        {
+            var result = await _context.Houses
+                .Where(h => h.StreetId == streetId)
+                .Include(h => h.Street)
+                .ThenInclude(s => s.City)
+                .Select(h => new
+                {
+                    h.Id,
+                    Address = $"{h.Street!.City!.Name}, {h.Street.Name}, д. {h.Number}",
+                    ApartmentCount = h.Apartments.Count
+                })
+                .ToListAsync();
+
+            return Ok(result);
+        }
+
         // GET: api/Streets/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Street>> GetStreet(int id)

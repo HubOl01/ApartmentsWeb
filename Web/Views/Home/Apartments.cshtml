@@ -1,0 +1,25 @@
+﻿@model List<Apartment>
+@{
+    var houseId = ViewBag.HouseId;
+    var min = ViewBag.MinArea ?? "";
+    var max = ViewBag.MaxArea ?? "";
+}
+
+<h2>Квартиры</h2>
+
+<form method="get" action="@Url.Action("Index", new { houseId = houseId })">
+    <input type="hidden" name="houseId" value="@houseId" />
+    Мин площадь: <input type="number" name="minArea" value="@min" step="0.1" />
+    Макс площадь: <input type="number" name="maxArea" value="@max" step="0.1" />
+    <button type="submit">Фильтр</button>
+</form>
+
+<table>
+    @foreach (var apt in Model)
+    {
+        <tr>
+            <td>ID: @apt.Id</td>
+            <td>Площадь: @apt.Area</td>
+        </tr>
+    }
+</table>

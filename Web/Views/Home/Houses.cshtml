@@ -1,0 +1,13 @@
+﻿@model List<House>
+
+<h2>Дома</h2>
+
+<table>
+    @foreach (var house in Model)
+    {
+        <tr ondblclick="location.href='@Url.Action("Index", "Apartments", new { cityId = house.Id })'">
+            <td>@house.FullAddress</td>
+            <td>Улиц: @house.ApartmentCount</td>
+        </tr>
+    }
+</table>

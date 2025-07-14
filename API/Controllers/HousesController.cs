@@ -40,7 +40,7 @@ namespace API.Controllers
           {
               return NotFound();
           }
-            var house = await _context.Houses.FindAsync(id);
+            var house = await _context.Houses.Include(h => h.Apartments).FirstOrDefaultAsync(h => h.Id == id);
 
             if (house == null)
             {

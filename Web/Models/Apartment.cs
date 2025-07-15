@@ -2,8 +2,7 @@
 {
     public class Apartment
     {
-            public int Id { get; set; }
-            public float Area { get; set; }
-            public int HouseId { get; set; }
+        public int Id { get; set; }
+        public float Area { get; set; }
     }
 }

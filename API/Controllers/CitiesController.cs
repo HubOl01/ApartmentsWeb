@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Models;
@@ -30,7 +25,7 @@ namespace API.Controllers
                 {
                     c.Id,
                     c.Name,
-                    HouseCount = c.Streets.SelectMany(s => s.Houses).Count()
+                    StreetCount = c.Streets.SelectMany(s => s.Houses).Count()
                 })
                 .ToListAsync();
 
@@ -52,18 +47,18 @@ namespace API.Controllers
 
             return Ok(result);
         }
-        // GET: api/Cities51/houses
+        // GET: api/Cities/1/houses
         [HttpGet("{cityId}/houses")]
         public async Task<IActionResult> GetHousesByCity(int cityId)
         {
             var result = await _context.Houses
-                .Where(h => h.Street.CityId == cityId)
+                .Where(h => h.Street!.CityId == cityId)
                 .Include(h => h.Street)
-                .ThenInclude(s => s.City)
+                .ThenInclude(s => s!.City)
                 .Select(h => new
                 {
                     h.Id,
-                    Address = $"{h.Street.City.Name}, {h.Street.Name}, д. {h.Number}",
+                    Address = $"{h.Street!.City!.Name}, {h.Street.Name}, д. {h.Number}",
                     ApartmentCount = h.Apartments.Count
                 })
                 .ToListAsync();
@@ -75,10 +70,6 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<City>> GetCity(int id)
         {
-          if (_context.Cities == null)
-          {
-              return NotFound();
-          }
             var city = await _context.Cities.FindAsync(id);
 
             if (city == null)
@@ -97,9 +88,7 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-
             _context.Entry(city).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -123,10 +112,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<City>> PostCity(City city)
         {
-          if (_context.Cities == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Cities'  is null.");
-          }
             _context.Cities.Add(city);
             await _context.SaveChangesAsync();
 
@@ -137,10 +122,6 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCity(int id)
         {
-            if (_context.Cities == null)
-            {
-                return NotFound();
-            }
             var city = await _context.Cities.FindAsync(id);
             if (city == null)
             {

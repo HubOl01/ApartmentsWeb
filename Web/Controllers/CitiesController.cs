@@ -1,29 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Web.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Web.Services;
 
 namespace Web.Controllers
 {
+    [Route("Cities")]
     public class CitiesController : Controller
     {
-        private readonly ApiService _api;
+        private readonly ApiService _apiService;
 
-        public CitiesController(ApiService api) => _api = api;
-
-        public async Task<IActionResult> Index()
+        public CitiesController(ApiService apiService)
         {
-            var cities = await _api.GetCitiesAsync();
-            Console.WriteLine("Cities loaded: " + cities?.Count);
-            return View(cities);
+            _apiService = apiService;
         }
 
-        //// GET: Cities/Details/5
-        //public async Task<IActionResult> Details(int id)
-        //{
-        //    var streets = await _api.GetStreetsByCityAsync(id);
-        //    ViewBag.CityId = id;
-        //    return View(streets);
-        //}
+        [HttpGet("{id}/Streets")]
+        public async Task<IActionResult> Streets(int id)
+        {
+            var streets = await _apiService.GetStreetsAsync(id);
+            ViewBag.CityId = id;
+            return View(streets);
+        }
     }
 }

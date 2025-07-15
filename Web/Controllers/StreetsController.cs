@@ -3,17 +3,23 @@ using Web.Services;
 
 namespace Web.Controllers
 {
+    [Route("Cities/{cityId}/Streets")]
     public class StreetsController : Controller
     {
-        private readonly ApiService _api;
+        private readonly ApiService _apiService;
 
-        public StreetsController(ApiService api) => _api = api;
-
-        public async Task<IActionResult> Index(int cityId)
+        public StreetsController(ApiService apiService)
         {
+            _apiService = apiService;
+        }
+
+        [HttpGet("{streetId}/Houses")]
+        public async Task<IActionResult> Houses(int cityId, int streetId)
+        {
+            var houses = await _apiService.GetHousesByStreetAsync(streetId);
             ViewBag.CityId = cityId;
-            var streets = await _api.GetStreetsAsync(cityId);
-            return View(streets);
+            ViewBag.StreetId = streetId;
+            return View(houses);
         }
     }
 }

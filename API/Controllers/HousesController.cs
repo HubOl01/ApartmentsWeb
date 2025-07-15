@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Models;
@@ -25,10 +20,6 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<House>>> GetHouses()
         {
-          if (_context.Houses == null)
-          {
-              return NotFound();
-          }
             return await _context.Houses.Include(e => e.Apartments).ToListAsync();
         }
 
@@ -36,12 +27,7 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<House>> GetHouse(int id)
         {
-          if (_context.Houses == null)
-          {
-              return NotFound();
-          }
             var house = await _context.Houses.Include(h => h.Apartments).FirstOrDefaultAsync(h => h.Id == id);
-
             if (house == null)
             {
                 return NotFound();
@@ -84,10 +70,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<House>> PostHouse(House house)
         {
-          if (_context.Houses == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Houses'  is null.");
-          }
             _context.Houses.Add(house);
             await _context.SaveChangesAsync();
 
@@ -98,10 +80,6 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteHouse(int id)
         {
-            if (_context.Houses == null)
-            {
-                return NotFound();
-            }
             var house = await _context.Houses.FindAsync(id);
             if (house == null)
             {

@@ -2,7 +2,6 @@ using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient("ApiClient", client =>
@@ -12,7 +11,6 @@ builder.Services.AddHttpClient("ApiClient", client =>
 builder.Services.AddScoped<ApiService>();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

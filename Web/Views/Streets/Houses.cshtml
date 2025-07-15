@@ -1,0 +1,26 @@
+﻿@model List<House>
+@{
+    ViewData["Title"] = "Houses";
+    int cityId = (int)ViewBag.CityId;
+    int streetId = (int)ViewBag.StreetId;
+}
+
+<a href="@Url.Action("Streets", "Cities", new { id = cityId })">Назад к улицам</a>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Дом</th>
+        <th>Квартир</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var house in Model)
+    {
+        <tr ondblclick="location.href='@Url.Action("Apartments", "Houses", new { cityId, streetId, houseId = house.Id })'">
+            <td>@house.Address</td>
+            <td>@house.ApartmentCount</td>
+        </tr>
+    }
+    </tbody>
+</table>

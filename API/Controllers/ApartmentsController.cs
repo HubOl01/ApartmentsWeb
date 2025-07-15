@@ -21,32 +21,34 @@ namespace API.Controllers
             _context = context;
         }
 
-        // GET: api/Apartments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Apartment>>> GetApartments()
+        public async Task<ActionResult<IEnumerable<Apartment>>> GetApartments([FromQuery] int? houseId,
+            [FromQuery] float? minArea, [FromQuery] float? maxArea)
         {
-          if (_context.Apartments == null)
-          {
-              return NotFound();
-          }
-            return await _context.Apartments.ToListAsync();
+            var query = _context.Apartments.AsQueryable();
+
+            if (houseId.HasValue)
+                query = query.Where(a => a.HouseId == houseId);
+
+            if (minArea.HasValue)
+                query = query.Where(a => a.Area >= minArea);
+
+            if (maxArea.HasValue)
+                query = query.Where(a => a.Area <= maxArea);
+
+            return await query.ToListAsync();
         }
+
 
         // GET: api/Apartments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Apartment>> GetApartment(int id)
         {
-          if (_context.Apartments == null)
-          {
-              return NotFound();
-          }
             var apartment = await _context.Apartments.FindAsync(id);
-
             if (apartment == null)
             {
                 return NotFound();
             }
-
             return apartment;
         }
 
@@ -58,9 +60,7 @@ namespace API.Controllers
             {
                 return BadRequest();
             }
-
             _context.Entry(apartment).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -84,10 +84,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Apartment>> PostApartment(Apartment apartment)
         {
-          if (_context.Apartments == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Apartments'  is null.");
-          }
             _context.Apartments.Add(apartment);
             await _context.SaveChangesAsync();
 
@@ -98,10 +94,6 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteApartment(int id)
         {
-            if (_context.Apartments == null)
-            {
-                return NotFound();
-            }
             var apartment = await _context.Apartments.FindAsync(id);
             if (apartment == null)
             {

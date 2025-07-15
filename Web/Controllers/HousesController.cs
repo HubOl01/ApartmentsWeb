@@ -1,26 +1,30 @@
-﻿    using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Web.Services;
 
 namespace Web.Controllers
 {
+    [Route("Cities/{cityId}/Streets/{streetId}/Houses")]
     public class HousesController : Controller
     {
-        private readonly ApiService _api;
+        private readonly ApiService _apiService;
 
-        public HousesController(ApiService api) => _api = api;
-
-        public async Task<IActionResult> IndexByCity(int cityId)
+        public HousesController(ApiService apiService)
         {
-            ViewBag.CityId = cityId;
-            var houses = await _api.GetHousesByCityAsync(cityId);
-            return View("Index", houses);
+            _apiService = apiService;
         }
 
-        public async Task<IActionResult> IndexByStreet(int streetId)
+        [HttpGet("{houseId}/Apartments")]
+        public async Task<IActionResult> Apartments(int cityId, int streetId, int houseId, float? minArea,
+            float? maxArea)
         {
+            ViewBag.CityId = cityId;
             ViewBag.StreetId = streetId;
-            var houses = await _api.GetHousesByStreetAsync(streetId);
-            return View("Index", houses);
+            ViewBag.HouseId = houseId;
+            ViewBag.MinArea = minArea;
+            ViewBag.MaxArea = maxArea;
+
+            var apartments = await _apiService.GetApartmentsByHouseAsync(houseId, minArea, maxArea);
+            return View(apartments);
         }
     }
 }

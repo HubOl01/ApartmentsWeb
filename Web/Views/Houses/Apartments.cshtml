@@ -1,0 +1,34 @@
+﻿@model List<Apartment>
+@{
+    ViewData["Title"] = "Apartments";
+    int cityId = (int)ViewBag.CityId;
+    int streetId = (int)ViewBag.StreetId;
+    int houseId = (int)ViewBag.HouseId;
+}
+
+<a href="@Url.Action("Houses", "Streets", new { cityId, streetId })">Назад к домам</a>
+
+<form method="get">
+    <input type="hidden" name="id" value="@houseId"/>
+    <label>Мин. площадь: <input type="number" name="minArea"/></label>
+    <label>Макс. площадь: <input type="number" name="maxArea"/></label>
+    <button type="submit">Фильтровать</button>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>№</th>
+        <th>Площадь</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var apt in Model)
+    {
+        <tr>
+            <td>@apt.Id</td>
+            <td>@apt.Area</td>
+        </tr>
+    }
+    </tbody>
+</table>

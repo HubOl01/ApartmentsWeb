@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Data;
 using API.Models;
@@ -25,10 +20,6 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Street>>> GetStreets()
         {
-          if (_context.Streets == null)
-          {
-              return NotFound();
-          }
             return await _context.Streets.Include(e => e.Houses).ToListAsync();
         }
 
@@ -38,7 +29,7 @@ namespace API.Controllers
             var result = await _context.Houses
                 .Where(h => h.StreetId == streetId)
                 .Include(h => h.Street)
-                .ThenInclude(s => s.City)
+                .ThenInclude(s => s!.City)
                 .Select(h => new
                 {
                     h.Id,
@@ -54,10 +45,6 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Street>> GetStreet(int id)
         {
-          if (_context.Streets == null)
-          {
-              return NotFound();
-          }
             var street = await _context.Streets.FindAsync(id);
 
             if (street == null)
@@ -102,10 +89,6 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Street>> PostStreet(Street street)
         {
-          if (_context.Streets == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Streets'  is null.");
-          }
             _context.Streets.Add(street);
             await _context.SaveChangesAsync();
 
@@ -116,10 +99,6 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStreet(int id)
         {
-            if (_context.Streets == null)
-            {
-                return NotFound();
-            }
             var street = await _context.Streets.FindAsync(id);
             if (street == null)
             {
